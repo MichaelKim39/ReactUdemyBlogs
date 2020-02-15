@@ -1,30 +1,56 @@
 import React, { useContext } from "react";
-import { View, Text, StyleSheet, FlatList, Button } from "react-native";
+import {
+	View,
+	Text,
+	StyleSheet,
+	FlatList,
+	Button,
+	TouchableOpacity
+} from "react-native";
 import { Context } from "../context/BlogContext";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, Feather } from "@expo/vector-icons";
 
-const IndexScreen = () => {
+const IndexScreen = ({ navigation }) => {
 	// useContext prop justs accesses value prop from our provider
 	// Destructure context object, getting data and functions from provider
-	const { state, addBlogPost } = useContext(Context);
+	const { state, addBlogPost, deleteBlogPost } = useContext(Context);
 
 	return (
 		<View>
-			<Button title='Add Post' onPress={addBlogPost} />
 			<FlatList
 				data={state}
 				keyExtractor={blogPost => blogPost.title}
 				renderItem={({ item }) => {
 					return (
-						<View style={styles.row}>
-							<Text style={styles.title}>{item.title}</Text>
-							<MaterialIcons name='delete' style={styles.icon} />
-						</View>
+						<TouchableOpacity
+							onPress={() => navigation.navigate("Show", { id: item.id })}
+						>
+							<View style={styles.row}>
+								<Text style={styles.title}>
+									{item.title} - {item.id}
+								</Text>
+								<TouchableOpacity onPress={() => deleteBlogPost(item.id)}>
+									<MaterialIcons name='delete' style={styles.icon} />
+								</TouchableOpacity>
+							</View>
+						</TouchableOpacity>
 					);
 				}}
 			/>
 		</View>
 	);
+};
+
+// React navigation calls the function inside navigation options
+// Automatically when index screen is navigated to
+IndexScreen.navigationOptions = ({ navigation }) => {
+	return {
+		headerRight: () => (
+			<TouchableOpacity onPress={() => navigation.navigate("Create")}>
+				<Feather style={styles.plus} name='plus' />
+			</TouchableOpacity>
+		)
+	};
 };
 
 const styles = StyleSheet.create({
@@ -40,7 +66,14 @@ const styles = StyleSheet.create({
 		fontSize: 18
 	},
 	icon: {
-		fontSize: 24
+		fontSize: 28,
+		padding: 5
+	},
+	plus: {
+		// borderWidth: 10,
+		// borderColor: "black",
+		marginRight: 15,
+		fontSize: 30
 	}
 });
 
@@ -58,5 +91,5 @@ useReducer recap:
     Manages state
     We 'dispatch' an 'action' to modify state
     dispatch is a function that takes an object (by convention with type and payload properties inside)
-    Implement a reducer function that is called by dispatch through React 
+	Implement a reducer function that is called by dispatch through React 
 */

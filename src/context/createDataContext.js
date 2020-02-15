@@ -21,6 +21,7 @@ export default (reducer, actions, initialState) => {
 			boundActions[key] = actions[key](dispatch);
 		}
 
+		// Provide the utility function and state from reducer to children
 		return (
 			<Context.Provider value={{ state: state, ...boundActions }}>
 				{children}

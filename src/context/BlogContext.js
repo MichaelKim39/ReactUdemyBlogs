@@ -3,8 +3,17 @@ import createDataContext from "./createDataContext";
 // Reducer usually takes state and action arguments
 const blogReducer = (state, action) => {
 	switch (action.type) {
+		case "delete_blogpost":
+			return state.filter(blogPost => blogPost.id !== action.payload);
 		case "add_blogpost":
-			return [...state, { title: `Blog Post #${state.length + 1}` }];
+			return [
+				...state,
+				{
+					id: Math.floor(Math.random() * 99999),
+					title: action.payload.title,
+					content: action.payload.content
+				}
+			];
 		default:
 			return state;
 	}
@@ -12,15 +21,23 @@ const blogReducer = (state, action) => {
 
 // Helper function to call dispatch (and thus call reducer)
 const addBlogPost = dispatch => {
-	return () => {
-		dispatch({ type: "add_blogpost" });
+	return (title, content, callback) => {
+		dispatch({ type: "add_blogpost", payload: { title, content } });
+		callback();
+	};
+};
+
+// Utility function to delete blog posts
+const deleteBlogPost = dispatch => {
+	return id => {
+		dispatch({ type: "delete_blogpost", payload: id });
 	};
 };
 
 export const { Context, Provider } = createDataContext(
 	blogReducer,
-	{ addBlogPost },
-	[]
+	{ addBlogPost, deleteBlogPost },
+	[{ title: "TEST POST", content: "TEST CONTENT", id: 1 }]
 );
 
 /*
@@ -49,5 +66,9 @@ React provides createContext function to pass data using context
 
 Nested elements returned in a component are stored in a prop called children
     The component will pass the prop into the parent component returned
-    Children prop is unrelated to context but can be integrated with it
+	Children prop is unrelated to context but can be integrated with it
+		
+Whenever we want to add in new interaction with state:
+	1. Add new function that calls dispatch
+	2. Add new case to reducer
 */
