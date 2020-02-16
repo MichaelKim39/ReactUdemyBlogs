@@ -1,8 +1,53 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TextInput, Button } from "react-native";
 
-const BlogPostForm = () => {};
+const BlogPostForm = ({ onSubmit, initialValues }) => {
+	const [title, setTitle] = useState(initialValues.title);
+	const [content, setContent] = useState(initialValues.content);
 
-const styles = StyleSheet.create({});
+	return (
+		// Turn input into "controlled input" by implementing state
+		// destructure useState, set value and onChangeText props
+		<View>
+			<Text style={styles.label}>Enter Title: </Text>
+			<TextInput
+				style={styles.input}
+				value={title}
+				onChangeText={text => setTitle(text)}
+			/>
+			<Text style={styles.label}>Enter Content: </Text>
+			<TextInput
+				style={styles.input}
+				value={content}
+				onChangeText={text => setContent(text)}
+			/>
+			<Button title='Save Blog Post' onPress={() => onSubmit(title, content)} />
+		</View>
+	);
+};
+
+// Default props object fills in values if prop is not passed in
+BlogPostForm.defaultProps = {
+	initialValues: {
+		title: "",
+		content: ""
+	}
+};
+
+const styles = StyleSheet.create({
+	input: {
+		fontSize: 18,
+		borderWidth: 1,
+		borderColor: "black",
+		marginBottom: 5,
+		marginHorizontal: 10,
+		padding: 5
+	},
+	label: {
+		fontSize: 20,
+		marginBottom: 5,
+		marginLeft: 10
+	}
+});
 
 export default BlogPostForm;
