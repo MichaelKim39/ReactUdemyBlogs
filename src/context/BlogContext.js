@@ -1,8 +1,11 @@
 import createDataContext from "./createDataContext";
+import jsonserver from "../api/jsonserver";
 
 // Reducer usually takes state and action arguments
 const blogReducer = (state, action) => {
 	switch (action.type) {
+		case "get_blogposts":
+			return action.payload;
 		case "edit_blogpost":
 			return state.map(blogPost => {
 				return blogPost.id === action.payload.id ? action.payload : blogPost;
@@ -21,6 +24,15 @@ const blogReducer = (state, action) => {
 		default:
 			return state;
 	}
+};
+
+const getBlogPosts = dispatch => {
+	return async () => {
+		const response = await jsonserver.get("/blogposts");
+		// response.data === [{}, {}, {}...]
+
+		dispatch({ type: "get_blogposts", payload: response.data });
+	};
 };
 
 // Helper function to call dispatch (and thus call reducer)
@@ -53,12 +65,15 @@ const editBlogPost = dispatch => {
 
 export const { Context, Provider } = createDataContext(
 	blogReducer,
-	{ addBlogPost, deleteBlogPost, editBlogPost },
-	[{ title: "TEST POST", content: "TEST CONTENT", id: 1 }]
+	{ addBlogPost, deleteBlogPost, editBlogPost, getBlogPosts },
+	[]
+	// [{ title: "TEST POST", content: "TEST CONTENT", id: 1 }]
 );
 
 /*
 NOTES:
+
+APIs are the total source of truth	
 
 Use named export for the provider (export ___, import {})
 Use default export for context   (export default ___, import ___)

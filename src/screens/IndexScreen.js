@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
 	View,
 	Text,
@@ -13,7 +13,13 @@ import { MaterialIcons, Feather } from "@expo/vector-icons";
 const IndexScreen = ({ navigation }) => {
 	// useContext prop justs accesses value prop from our provider
 	// Destructure context object, getting data and functions from provider
-	const { state, addBlogPost, deleteBlogPost } = useContext(Context);
+	const { state, deleteBlogPost, getBlogPosts } = useContext(Context);
+
+	// NOTE since getBlogPosts modifies state we cannot call directly in the component due to repeated calls
+	// UseEffect hook used instead
+	useEffect(() => {
+		getBlogPosts();
+	}, []);
 
 	return (
 		<View>
