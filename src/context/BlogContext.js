@@ -36,9 +36,12 @@ const getBlogPosts = dispatch => {
 };
 
 // Helper function to call dispatch (and thus call reducer)
+// jsonserver automatically assigns ids for us
 const addBlogPost = dispatch => {
-	return (title, content, callback) => {
-		dispatch({ type: "add_blogpost", payload: { title, content } });
+	return async (title, content, callback) => {
+		await jsonserver.post("/blogposts", { title, content });
+
+		// dispatch({ type: "add_blogpost", payload: { title, content } });
 		if (callback) {
 			callback();
 		}
