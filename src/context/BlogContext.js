@@ -12,15 +12,6 @@ const blogReducer = (state, action) => {
 			});
 		case "delete_blogpost":
 			return state.filter(blogPost => blogPost.id !== action.payload);
-		case "add_blogpost":
-			return [
-				...state,
-				{
-					id: Math.floor(Math.random() * 99999),
-					title: action.payload.title,
-					content: action.payload.content
-				}
-			];
 		default:
 			return state;
 	}
@@ -50,14 +41,17 @@ const addBlogPost = dispatch => {
 
 // Utility function to delete blog posts
 const deleteBlogPost = dispatch => {
-	return id => {
+	return async id => {
+		await jsonserver.delete(`/blogposts/${id}`);
 		dispatch({ type: "delete_blogpost", payload: id });
 	};
 };
 
 // Utility function to edit blog posts
 const editBlogPost = dispatch => {
-	return (id, title, content, callback) => {
+	return async (id, title, content, callback) => {
+		await jsonserver.put(`/blogposts/${id}`, { title, content });
+
 		dispatch({ type: "edit_blogpost", payload: { id, title, content } });
 		// Must catch null argument for callback
 		if (callback) {

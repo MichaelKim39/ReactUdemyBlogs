@@ -19,6 +19,15 @@ const IndexScreen = ({ navigation }) => {
 	// UseEffect hook used instead
 	useEffect(() => {
 		getBlogPosts();
+		// Invoke callback whenever indexScreen obtains focus
+		// Must clean up if component de mounted - leads to memory leaks
+		const listener = navigation.addListener("didFocus", () => {
+			getBlogPosts();
+		});
+		// Cleanup - useEffect runs return if index screen de mounted
+		return () => {
+			listener.remove();
+		};
 	}, []);
 
 	return (
